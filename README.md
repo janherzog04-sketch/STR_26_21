@@ -30,17 +30,19 @@
   c) Analyse the global stability of the structure without the walls, and evaluate their performance. Based on their performance, remove all or some of the       
      slender concrete walls. (Design)
 
-  d) Avoid transferring additional loads from the extension to the Type F foundations, redistribute them to foundations with greater remaining capacity, or 
-     reinforce and extend the affected foundations. (Design)
+  d) 
+  Avoid transferring additional loads from the extension to the Type F foundations, redistribute them to foundations with greater remaining capacity, or 
+  reinforce and extend the affected foundations. (Design)
 
-     Develop an updated foundation model that incorporates the loads from the building extension, the current soil conditions, and potential differential 
-     settlements. (Modeling)
+  Develop an updated foundation model that incorporates the loads from the building extension, the current soil conditions, and potential differential 
+  settlements. (Modeling)
 
-     Tool that evaluates existing foundations with the proposed expansion according to current Eurocode requirements, including ultimate limit 
-     state bearing capacity and settlement verification. (Tools)
+  Tool that evaluates existing foundations with the proposed expansion according to current Eurocode requirements, including ultimate limit 
+  state bearing capacity and settlement verification. (Tools)
 
-  e) By finding load reserves, details for a possible extension can be established, such as location and extent. Furthermore, other changes in the structural 
-     system can be assessed and optimised. (Design)
+  e) 
+  By finding load reserves, details for a possible extension can be established, such as location and extent. Furthermore, other changes in the structural 
+  system can be assessed and optimised. (Design)
      
 
 5. Report and page numbers:
