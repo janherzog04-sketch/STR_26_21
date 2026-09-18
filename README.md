@@ -4,6 +4,38 @@
 
 2. Focus area: Structures
 
-3. Identified issues & identified possible solutions:
+3. Identified issues:
 
--> see A1.md file
+  a) 
+
+  b)
+
+  c)
+
+  d)
+
+  e)
+
+4. Identified possible solutions:
+
+  a)
+
+  b)
+
+  c)
+
+  d)
+
+  e)
+
+5. Report and page numbers:
+
+  a)
+
+  b)
+
+  c)
+
+  d)
+
+  e)
