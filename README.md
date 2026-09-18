@@ -1,8 +1,10 @@
 # STR_26_21
 
 1. Group number: 21
+   
 
 2. Focus area: Structures
+   
 
 3. Identified issues:
 
@@ -15,6 +17,7 @@
   d) Unacceptably ratio of Type f foundations
 
   e) Finding load-reserves
+  
 
 4. Identified possible solutions:
 
@@ -33,7 +36,12 @@
      Develop an updated foundation model that incorporates the loads from the building extension, the current soil conditions, and potential differential 
      settlements. (Modeling)
 
-  e)
+     Tool that evaluates existing foundations with the proposed expansion according to current Eurocode requirements, including ultimate limit 
+     state bearing capacity and settlement verification. (Tools)
+
+  e) By finding load reserves, details for a possible extension can be established, such as location and extent. Furthermore, other changes in the structural 
+     system can be assessed and optimised. (Design)
+     
 
 5. Report and page numbers:
 
