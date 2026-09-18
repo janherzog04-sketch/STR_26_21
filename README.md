@@ -18,7 +18,7 @@
 
   e) Finding load-reserves
   
-
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------
 4. Identified possible solutions:
 
   a) 
@@ -29,8 +29,9 @@
 
   Develop an updated structural model that includes the proposed floors, current load combinations, column-foundation interaction, and second-order effects.         (Modeling)
 
-  c) Analyse the global stability of the structure without the walls, and evaluate their performance. Based on their performance, remove all or some of the       
-     slender concrete walls. (Design)
+  c) 
+  Analyse the global stability of the structure without the walls, and evaluate their performance. Based on their performance, remove all or some of the       
+  slender concrete walls. (Design)
 
   d) 
   Avoid transferring additional loads from the extension to the Type F foundations, redistribute them to foundations with greater remaining capacity, or 
