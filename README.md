@@ -6,7 +6,7 @@
 
 3. Identified issues:
 
-  a) 
+  a) Critical load-bearing capacity of beams in the Auditorium
 
   b)
 
