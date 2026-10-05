@@ -60,3 +60,11 @@ Material (Geometry and materials -> "Materials"; more specified through Name of 
 Loads (Structural Analysis -> "Show Loads")
 Floor -> (Object Information -> Object -> "Spatial Container")
 Mechanical properties (E-modulus, compressive strength,...) -> not in the IFC Model -> information needed from the specific ETA
+
+We do not know yet how to extract those information out of the IFC Model. 
+This and to get familiar with python in general will part of our upcoming work in the group. 
+
+
+A2g: Software license 
+Due to our current plans we will work just with python.
+So we dont need any licensed software products yet. 
