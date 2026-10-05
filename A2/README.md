@@ -66,5 +66,5 @@ This and to get familiar with python in general will part of our upcoming work i
 
 
 A2g: Software license 
-Due to our current plans we will work just with python.
+Due to our current plans we will work just with python and blender.
 So we dont need any licensed software products yet. 
