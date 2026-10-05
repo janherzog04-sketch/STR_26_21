@@ -34,7 +34,7 @@ This would be checked during the designing phase.
 BIM purpose: Generate 
 -> includes sizing of facility elements in the design phase 
 
-A2d: Scope the use case (
+A2d: Scope the use case (-> can be seen in the folder "IMG" in Github) 
 
 A2e: Tool idea
 Describtion of the tool: 
@@ -51,5 +51,12 @@ The adaption of different thicknesses (e.g. for specific stories) can lead to a 
 Optimization of the shape can lead to a save of time, cost and ressources. 
 Technical verification of the slab in terms of structural analysis. 
 
-A2f: Information requirements
 
+A2f: Information requirements
+Span (Object Information -> Occurance Quantities -> "Length")
+Thickness (Geometry and materials -> Object materials -> "Total Thickness")
+Panel layers (Geometry and materials -> Object materials -> "Material Layers") 
+Material (Geometry and materials -> "Materials"; more specified through Name of the element -> "KLH" (manufacturer))
+Loads (Structural Analysis -> "Show Loads")
+Floor -> (Object Information -> Object -> "Spatial Container")
+Mechanical properties (E-modulus, compressive strength,...) -> not in the IFC Model -> information needed from the specific ETA
