@@ -1,11 +1,11 @@
-A2a: 
+A2a: About our group 
 We are confident in coding in Python:
 1 - Disagree
 
 Focus Are: Structures (Analysts)
 
 
-A2b: 
+A2b: Identify claim
 Report 26-09-D-STR
 Building 308
 
@@ -21,7 +21,7 @@ Exact Source: 26-09-D-STR-Anon.pdf,
 Appendix 3 (Pages 271–273, 304)9 & 26-08-D-STR-Anon.pdf, Page 17 (Section 5.4)
 
 
-A2c: 
+A2c: Use case
 This fact/claim would be checked by our tool:
 "An OpenBIM script that extracts timber/CLT panel spans, material stiffness properties, 
 and mass distributions directly from IFC to execute ULS and SLS checks."
@@ -33,4 +33,23 @@ This would be checked during the designing phase.
 
 BIM purpose: Generate 
 -> includes sizing of facility elements in the design phase 
+
+A2d: Scope the use case (
+
+A2e: Tool idea
+Describtion of the tool: 
+"At first the script / tool imports the IFC Model of the building. 
+Then it extracts the information about the element IfcSlab. 
+It takes the system information as well as the properties of the referred slab. 
+With this given information as well as external information from the standards, the ULS and SLS checks are executed. 
+In the end the overall utility ratios and thicknesses are summarized in a table / storage. 
+Finally the initial fact can be checked."
+
+Business / societal values: 
+The client can benefit from the overview of needed thicknesses. 
+The adaption of different thicknesses (e.g. for specific stories) can lead to a optimization ot the shape.
+Optimization of the shape can lead to a save of time, cost and ressources. 
+Technical verification of the slab in terms of structural analysis. 
+
+A2f: Information requirements
 
