@@ -11,19 +11,19 @@
 
 ## A2b: Identify claim
 
-**Building / report:** Building #2609 (Report 26-09-D-STR, DTU Building 308). Supporting evidence from Building #2608 (Report 26-08-D-STR).
+**Building / report:** Building 308 (Report 26-09-D-STR, DTU Building 308). 
 
-**Exact source:** `26-09-D-STR-Anon.pdf`, Appendix 3 (pp. 271–273, 304) and `26-08-D-STR-Anon.pdf`, p. 17 (Section 5.4).
+**Exact source:** `26-09-D-STR-Anon.pdf`, Appendix 3 (pp. 271–273, 304).
 
 **Claim to check:**
 
-> In the structural design of the CLT floor slabs of the new timber extension, the serviceability limit state (SLS: deflection and floor vibration) is more decisive than the ultimate limit state (ULS: bending and shear). In other words, the SLS utilisation ratio is higher than the ULS utilisation ratio, and SLS determines the required slab thickness.
+> In the structural design of the CLT floor slabs, the serviceability limit state (SLS: deflection and floor vibration) is more decisive than the ultimate limit state (ULS: bending and shear). In other words, the SLS utilisation ratio is higher than the ULS utilisation ratio, and SLS determines the required slab thickness.
 
-According to the report, the ULS utilisation of the timber is low (about 21 %), whereas deflection limits (L/300–L/400) and the vibration criterion (fundamental frequency f₁ ≥ 4.5 Hz, EN 1995-1-1) are said to govern.
+According to the report, the ULS utilisation of the timber is low, whereas deflection limits and the vibration criterion are said to govern.
 
 **Why this claim?**
-- It is *checkable*: the report gives numbers (21 % ULS, deflection limits, f₁ limit) that we can reproduce and compare with our own results.
-- It is *design-relevant*: if SLS governs, the slab thickness (and therefore timber volume, weight added to the existing structure and embodied carbon) is driven by stiffness, not strength. This is important for the extension, because the existing RC structure has little load reserve (see A1, issues 1, 2, 4 and 5).
+- It is *checkable*: the report gives numbers that we can reproduce and compare with our own results.
+- It is *design-relevant*: if SLS governs, the slab thickness (and therefore timber volume, weight added to the existing structure and embodied carbon) is driven by stiffness, not strength. This is important for the extension of Building 308.
 - It is *automatable*: the inputs (slab geometry, layers, material, floor) are mostly available in an IFC model, and the checks are formula-based (Eurocode 5 and the manufacturer's ETA).
 - It fits our group's background: it is a clearly bounded calculation, which is realistic given our limited Python experience.
 
