@@ -17,7 +17,7 @@
 
 **Claim to check:**
 
-> In the structural design of the CLT floor slabs, the serviceability limit state (SLS: deflection and floor vibration) is more decisive than the ultimate limit state (ULS: bending and shear). In other words, the SLS utilisation ratio is higher than the ULS utilisation ratio, and SLS determines the required slab thickness.
+> In the structural design of the CLT floor slabs, the serviceability limit state (SLS: deflection and floor vibration) is more decisive than the ultimate limit state (ULS: bending and shear) and therefore determines the required slab thickness.
 
 According to the report, the ULS utilisation of the timber is low, whereas deflection limits and the vibration criterion are said to govern.
 
