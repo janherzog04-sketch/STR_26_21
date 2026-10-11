@@ -81,19 +81,16 @@ The tool is a Python script using ifcOpenShell. It:
 
 ## A2f: Information requirements
 
-| Information | Where in IFC | In the model? | ifcOpenShell approach | What we need to learn |
-|---|---|---|---|---|
-| Slab elements | `IfcSlab`, `PredefinedType = FLOOR` | Yes (**TODO** verify) | `model.by_type("IfcSlab")` | Filtering by type and material |
-| Material / manufacturer (KLH) | `IfcMaterial.Name`, `IfcMaterialLayerSet` | Partly (name only) | `ifcopenshell.util.element.get_material()` | Reading material sets |
-| Thickness | `IfcMaterialLayerSet.TotalThickness` / `IfcMaterialLayer.LayerThickness`; also `Qto_SlabBaseQuantities.Width` (depth) | Yes (**TODO** verify) | `ifcopenshell.util.element.get_psets()` | Layer set vs. quantity set |
-| Panel layers | `IfcMaterialLayerSetUsage` → `IfcMaterialLayerSet` → `IfcMaterialLayer` | Yes, but grain direction of each layer is probably not modelled | `get_material()` and iterate `MaterialLayers` | How to store layer orientation (own property) |
-| Slab dimensions | `Qto_SlabBaseQuantities` (Length, Width, GrossArea) | Check | `get_psets(slab, qtos_only=True)` | Difference between slab length and span |
-| **Span** | Not directly. Derived from geometry and supporting elements (`IfcBeam`, `IfcWall`) | No (needs own logic) | Geometry via `ifcopenshell.geom`, bounding box / support distances | Geometry processing; the hardest part |
-| Storey | `IfcRelContainedInSpatialStructure` → `IfcBuildingStorey` | Yes | `ifcopenshell.util.element.get_container()` | Spatial structure |
-| Mass / self-weight | `Qto_SlabBaseQuantities.NetVolume` × density | Volume yes, density no | Volume from quantity set, density from ETA | Unit handling |
-| E-modulus, shear modulus, strengths, density | `Pset_MaterialMechanical` | Likely not (**TODO** verify) | External ETA table (JSON/CSV) | Reading external data; linking by product name |
-| Loads (permanent, imposed) | `IfcStructuralLoad*` is rarely modelled | Likely not; "Show Loads" in the viewer may be empty (**TODO** verify) | Input from EN 1991-1-1 or the report as parameters | Load combinations (EN 1990) |
-| Support conditions | Not in the architectural model | No | Assumption: simply supported, one-way span (document it) | Structural modelling assumptions |
+**Information requirements:**
+- Span (Object Information -> Occurance Quantities -> "Length") 
+- Thickness (Geometry and materials -> Object materials -> "Total Thickness") 
+- Panel layers (Geometry and materials -> Object materials -> "Material Layers") 
+- Material (Geometry and materials -> "Materials"; more specified through Name of the element -> "KLH" (manufacturer)) 
+- Loads (Structural Analysis -> "Show Loads") 
+- Floor -> (Object Information -> Object -> "Spatial Container") 
+- Mechanical properties (E-modulus, compressive strength,...) -> not in the IFC Model -> information needed from the specific ETA
+
+We do not know yet how to extract those information out of the IFC Model. This and to get familiar with python in general will part of our upcoming work in the group.
 
 **Open questions for the Learning Bank (Excel in Teams):**
 - How do we derive the structural span of an `IfcSlab` from its supporting elements?
