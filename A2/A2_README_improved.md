@@ -77,20 +77,6 @@ The tool is a Python script using ifcOpenShell. It:
 - *Resources:* less timber, less added weight on the existing building, and lower embodied carbon; this also saves time and cost.
 - *Quality:* technical verification of the slabs, and a transparent check of a claim in the report.
 
-**Tool BPMN:**
-
-![Tool process](IMG/diagram_tool.svg)
-
-Source: [`IMG/diagram_tool.bpmn`](IMG/diagram_tool.bpmn)
-
-**TODO, corrections for the diagram:**
-- Use an AND gateway to split after "Import IFC model" and to join before the checks.
-- Run ULS and SLS in parallel for the same thickness, then compare the two ratios (gateway: "SLS ratio > ULS ratio?"). Do not stop at the first failing check.
-- Add a task "Adjust thickness / layer build-up" in the "ratio ≥ 100 %" loop.
-- Data store "Overview list": use *output* associations (the tool writes to it).
-- Add the vibration check (f₁ ≥ 4.5 Hz) or remove it from the claim.
-- Name the lanes separately instead of in the pool title.
-
 ---
 
 ## A2f: Information requirements
