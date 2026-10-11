@@ -1,4 +1,5 @@
 A2a: About our group 
+Group number: 21 (STR_26_21)
 We are confident in coding in Python:
 1 - Disagree
 
