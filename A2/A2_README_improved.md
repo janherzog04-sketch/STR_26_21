@@ -98,10 +98,4 @@ We do not know yet how to extract those information out of the IFC Model. This a
 
 ## A2g: Software licence
 
-We choose the **MIT licence** for our tool (a `LICENSE` file is added to the repository root).
-
-Reasoning:
-- ifcOpenShell is licensed under LGPL-3.0, which allows its use as a library from MIT-licensed code.
-- Blender and Bonsai are GPL. If our code imports `bpy` or is distributed as a Blender add-on, it must be released under a GPL-compatible licence (GPL-3.0). **TODO:** decide this once we know whether we use Blender only for viewing the model (then MIT is fine) or inside the script (then use GPL-3.0).
-
 We currently work only with Python, ifcOpenShell and Blender; no licensed (commercial) software is needed.
