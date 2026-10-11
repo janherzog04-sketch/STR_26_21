@@ -1,7 +1,5 @@
 # A2 – Use case, claim and tool idea (Group 21)
 
----
-
 ## A2a: About our group
 
 - **Group number:** 21 (STR_26_21)
