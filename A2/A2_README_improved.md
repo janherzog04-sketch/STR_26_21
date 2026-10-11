@@ -47,7 +47,7 @@ In the design phase, when the slab thickness is chosen and while the layout/span
 
 **BIM purpose:** *Analyse* (Validate -> checking a design against code requirements). The tool analyses existing slabs and reports whether they comply. The "required thickness" output is a result of the analysis.
 
-**Closest existing BIM use case:** structural analysis / design code checking in the design phase. **TODO:** name the exact use case from the course examples; if none fits, state that we define a new use case "Limit-state check of CLT floor slabs".
+**Closest existing BIM use case:** Fall 2025 - Group 23 - "Concrete beam width checking according to Eurocode 2". Similar processes, just for another structural element. 
 
 **Whole use case (BPMN):**
 
