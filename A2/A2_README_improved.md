@@ -53,11 +53,7 @@ In the design phase, when the slab thickness is chosen and while the layout/span
 
 ## A2d: Scope the use case
 
-The part of the use case for which we develop a new script is highlighted in the diagram below. Everything else (modelling, manufacturer data, final decision) is outside the scope of the tool.
-
-![Scope of the tool](IMG/diagram_use_case_scope.svg)
-
-(**TODO:** the file `diagram - tool.svg` currently shows the tool process with a "CLT SLAB CHECK" frame. Rename it without spaces, e.g. `diagram_use_case_scope.svg`, and make sure the whole-use-case diagram is a separate file. Convert the frame text to a path or normal `<text>` so that it renders on GitHub.)
+Can be seen in the repository -> A2 -> IMG 
 
 ---
 
