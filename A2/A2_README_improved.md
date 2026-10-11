@@ -49,17 +49,6 @@ In the design phase, when the slab thickness is chosen and while the layout/span
 
 **Closest existing BIM use case:** Fall 2025 - Group 23 - "Concrete beam width checking according to Eurocode 2". Similar processes, just for another structural element. 
 
-**Whole use case (BPMN):**
-
-![Whole use case](IMG/diagram_use_case.svg)
-
-Source: [`IMG/diagram_use_case.bpmn`](IMG/diagram_use_case.bpmn)
-
-The diagram should show (**TODO**, to be redrawn):
-- Lanes: *Structural engineer*, *Timber manufacturer (ETA)*, *Building owner / client*, *Tool*
-- Information exchange: IFC model from architect/engineer, ETA values from manufacturer, results report to the client
-- The specific IFC classes used: `IfcSlab`, `IfcMaterialLayerSet(Usage)`, `IfcBuildingStorey`, `IfcRelContainedInSpatialStructure`, `IfcBeam` (supports, for the span)
-
 ---
 
 ## A2d: Scope the use case
