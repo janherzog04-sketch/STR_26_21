@@ -35,7 +35,7 @@ According to the report, the ULS utilisation of the timber is low, whereas defle
 An ifcOpenShell script reads all CLT floor slabs from the IFC model, collects span, layer build-up, material and floor, and runs ULS and SLS checks for each slab with the same loads. For each slab it compares the ULS and SLS utilisation ratios and states which one governs.
 
 **When does the claim need to be checked?**
-In the design phase, when the slab thickness is chosen and while the layout/spans of the extension can still be changed (concept and detailed design). It must be repeated whenever spans, loads or the build-up change.
+In the design phase, when the slab thickness is chosen and while the layout/spans of the extension can still be changed. It must be repeated whenever spans, loads or the build-up change.
 
 **What information does the claim rely on?**
 - IFC model: geometry, material layers, thickness, storey, supporting elements (manufacturer type, e.g. KLH)
@@ -45,7 +45,7 @@ In the design phase, when the slab thickness is chosen and while the layout/span
 
 **Phase:** Design.
 
-**BIM purpose:** *Analyse* (checking a design against code requirements). **TODO:** decide between *Analyse* and *Generate* (our draft said Generate). Suggested justification: the tool does not create new model content; it analyses existing slabs and reports whether they comply. The "required thickness" output is a result of the analysis, not generated geometry.
+**BIM purpose:** *Analyse* (checking a design against code requirements). The tool analyses existing slabs and reports whether they comply. The "required thickness" output is a result of the analysis.
 
 **Closest existing BIM use case:** structural analysis / design code checking in the design phase. **TODO:** name the exact use case from the course examples; if none fits, state that we define a new use case "Limit-state check of CLT floor slabs".
 
