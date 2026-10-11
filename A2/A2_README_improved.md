@@ -92,12 +92,6 @@ The tool is a Python script using ifcOpenShell. It:
 
 We do not know yet how to extract those information out of the IFC Model. This and to get familiar with python in general will part of our upcoming work in the group.
 
-**Open questions for the Learning Bank (Excel in Teams):**
-- How do we derive the structural span of an `IfcSlab` from its supporting elements?
-- How do we model/store the layer grain direction of CLT in IFC?
-- How are manufacturer data (ETA) attached to materials: custom property set or external file?
-- Which CLT calculation method do we implement (gamma method, shear analogy, or the ETA's design tables)?
-
 **Next steps:** learn Python basics, install ifcOpenShell, open the model and print all `IfcSlab` elements with their materials and property sets, to see what is actually in the model.
 
 ---
