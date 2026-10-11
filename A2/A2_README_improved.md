@@ -4,8 +4,8 @@
 
 - **Group number:** 21 (STR_26_21)
 - **Focus area:** Structures
-- **Role:** Analysts (**TODO:** state explicitly whether the Structures focus area keeps the manager role in this group)
-- **Python confidence:** "I am confident coding in Python" – group total score: **1 (Disagree)** (**TODO:** confirm this is the sum/agreed score for the whole group, not one member's answer)
+- **Role:** Analysts 
+- **Python confidence:** "I am confident coding in Python" – group total score: **1 (Disagree)** 
 
 ---
 
