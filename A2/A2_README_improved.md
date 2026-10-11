@@ -1,7 +1,5 @@
 # A2 – Use case, claim and tool idea (Group 21)
 
-> Draft notes: items marked **TODO** need a decision or a check by the group before submission. Delete this note and all TODOs at the end.
-
 ---
 
 ## A2a: About our group
