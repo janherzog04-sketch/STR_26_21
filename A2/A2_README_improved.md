@@ -62,11 +62,11 @@ Can be seen in the repository -> A2 -> IMG
 **Description:**
 The tool is a Python script using ifcOpenShell. It:
 
-1. Opens the IFC model and selects all `IfcSlab` elements that are CLT floors (filter by material name, e.g. "KLH", and `PredefinedType` FLOOR).
-2. Extracts for each slab: thickness and layers (`IfcMaterialLayerSet`), area and dimensions (`Qto_SlabBaseQuantities`), the storey, and the supporting beams/walls to derive the **structural span**.
-3. Reads mechanical properties from an external ETA data file (JSON/CSV), since they are not in the IFC model.
+1. Opens the IFC model and selects all `IfcSlab` elements that are CLT floors (filter by material name, e.g. "KLH", and FLOOR).
+2. Extracts for each slab: thickness and layers, area and dimensions, the storey, and the supporting beams/walls to derive the **structural span**.
+3. Reads mechanical properties from an external ETA data file, since they are not in the IFC model.
 4. Defines the loads from Eurocode 1 / the report and builds the load combinations according to Eurocode 0.
-5. Runs the **ULS checks** (bending, shear) and the **SLS checks** (deflection, floor vibration f₁) for the *same* slab and thickness, using Eurocode 5 and the ETA method for CLT.
+5. Runs the **ULS checks** (bending, shear) and the **SLS checks** (deflection, floor vibration) for the *same* slab and thickness, using Eurocode 5 and the ETA for CLT.
 6. Calculates the utilisation ratio for each check, determines the governing limit state, and, if a check fails, searches the next available thickness/layer build-up from the ETA.
 7. Writes a summary table (CSV/Excel or console) per slab and storey: span, thickness, ULS ratio, SLS ratio, governing check, required thickness.
 8. Compares the results to the claim: if the SLS ratio is higher than the ULS ratio for the slabs, the claim is confirmed.
