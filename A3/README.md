@@ -12,12 +12,11 @@
 
 | | |
 |---|---|
-| **Focus area** | All focus areas (example from Structures, group 21) |
+| **Focus area** | All focus areas |
 | **Role / level** | Analyst – Level 1 *(you can run a Python script, you have never used Git in a team)* |
 | **BIM use** | Every A4 tool – the code must be on GitHub, the IFC model must not |
 | **Learning need owner** | STR_26_21 |
 | **Prerequisite** | Course tutorial *Introduction to scripting with IfcOpenShell in system environment* (Python, VS Code and IfcOpenShell installed) |
-| **Time** | ~45 minutes, best done **in pairs** |
 
 ## Learning objectives
 
