@@ -40,7 +40,7 @@ submitted **as a GitHub repository**. That is where most groups lose time:
 | Code is shared by e-mail / Teams | Nobody knows which `main.py` is the latest one. |
 | Everyone has a different model path | Every `git pull` overwrites your path → `FileNotFoundError`. |
 | The IFC model is pushed to GitHub | The assignment forbids it; files > 100 MB are rejected and block the push. |
-| Two people edited the same file | "Merge conflict" – and nobody knows what to click. |
+| Two people edited the same file | "Merge conflict" – and nobody knows what to do. |
 | Push is rejected | "Updates were rejected because the remote contains work that you do not have locally." |
 
 You don't need the terminal for any of this – VS Code has everything built in.
