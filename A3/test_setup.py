@@ -1,31 +1,29 @@
+"""check_setup.py - run once after cloning:  python check_setup.py"""
+import sys
 from pathlib import Path
 
-import ifcopenshell
-import ifcopenshell.util.element as element
 
-from config import MODEL_PATH
+def fail(message):
+    sys.exit(f"[FAIL] {message}")
 
-# 1. Modell öffnen
-model_path = Path(MODEL_PATH)
-if not model_path.is_file():
-    raise FileNotFoundError(f"Keine Datei gefunden unter {model_path}!")
 
-model = ifcopenshell.open(model_path)
-print("IfcOpenShell-Version:", ifcopenshell.version)
-print("IFC-Schema:", model.schema)
+print(f"[ OK ] Python {sys.version.split()[0]}")
 
-# 2. Alle Decken (IfcSlab) holen
-slabs = model.by_type("IfcSlab")
-print(f"\n{len(slabs)} Decken (IfcSlab) gefunden. Die ersten 10:\n")
+try:
+    import ifcopenshell
+except ImportError:
+    fail("IfcOpenShell missing -> pip install -r requirements.txt")
+print(f"[ OK ] IfcOpenShell {ifcopenshell.version}")
 
-# 3. Für jede Decke: Name, Geschoss und Material ausgeben
-for slab in slabs[:10]:
-    storey = element.get_container(slab)
-    material = element.get_material(slab, should_skip_usage=True)
+try:
+    from config import MODEL_PATH
+except ImportError:
+    fail("config.py missing -> copy config_example.py to config.py and add your model path")
+print("[ OK ] config.py found")
 
-    storey_name = storey.Name if storey else "-"
-    material_name = "-"
-    if material:
-        material_name = getattr(material, "Name", None) or getattr(material, "LayerSetName", None) or "-"
+if not Path(MODEL_PATH).is_file():
+    fail(f"No model at {MODEL_PATH} -> check the path in config.py")
 
-    print(f"{slab.Name}  |  Geschoss: {storey_name}  |  Material: {material_name}")
+model = ifcopenshell.open(MODEL_PATH)
+print(f"[ OK ] Model opened: {model.schema}, {len(model.by_type('IfcProduct'))} products")
+print("\nAll good - you can run main.py")
