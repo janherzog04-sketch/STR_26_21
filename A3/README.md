@@ -69,7 +69,7 @@ From now on, VS Code can clone, push and pull without asking for a password.
 
 ### Option A: one person creates the repository
 
-1. On [github.com](https://github.com): **New repository** → name (e.g. `STR_26_21`) → **Add a README** → choose
+1. On [github.com](https://github.com): **New repository** → name (e.g. `my-group-tool`) → **Add a README** → choose
    the `.gitignore` template **Python**.
 2. **Settings → Collaborators → Add people** – add your group members. They get an invitation by e-mail and have
    to **accept** it before they can push.
@@ -132,8 +132,95 @@ model = ifcopenshell.open(MODEL_PATH)
 ```
 
 After cloning, each person copies `config_example.py` → `config.py` once and writes their own path in it.
-Then run the check_setup.py – it tells you in plain words if Python,
-IfcOpenShell, `config.py` or the model file is missing.
+
+### 3.3 Same packages for everyone: `requirements.txt`
+
+`requirements.txt` is a plain text file that lists **every Python package your project imports**, one per line:
+
+```text
+# Python packages this project needs - one per line.
+# Install all of them at once with:  pip install -r requirements.txt
+ifcopenshell
+```
+
+Why it matters in a group:
+
+- Your partner sees at a glance what has to be installed – no guessing from `import` lines.
+- One command installs everything: `pip install -r requirements.txt` (in the VS Code terminal, inside the repository folder).
+- When you start using a new package (e.g. `pandas`), **add it to `requirements.txt` in the same commit**.
+  Otherwise your partner pulls your code and gets `ModuleNotFoundError`.
+
+### 3.4 Check that everything works: `check_setup.py`
+
+After cloning, creating `config.py` and installing the packages, run:
+
+```bash
+python check_setup.py
+```
+
+The script checks the four things that usually go wrong – Python, IfcOpenShell, `config.py`, the model file –
+and stops at the first problem with a hint what to do:
+
+```python
+"""check_setup.py - run once after cloning:  python check_setup.py"""
+import sys
+from pathlib import Path
+
+
+def fail(message):
+    sys.exit(f"[FAIL] {message}")
+
+
+print(f"[ OK ] Python {sys.version.split()[0]}")
+
+try:
+    import ifcopenshell
+except ImportError:
+    fail("IfcOpenShell missing -> pip install -r requirements.txt")
+print(f"[ OK ] IfcOpenShell {ifcopenshell.version}")
+
+try:
+    from config import MODEL_PATH
+except ImportError:
+    fail("config.py missing -> copy config_example.py to config.py and add your model path")
+print("[ OK ] config.py found")
+
+if not Path(MODEL_PATH).is_file():
+    fail(f"No model at {MODEL_PATH} -> check the path in config.py")
+
+model = ifcopenshell.open(MODEL_PATH)
+print(f"[ OK ] Model opened: {model.schema}, {len(model.by_type('IfcProduct'))} products")
+print("\nAll good - you can run main.py")
+```
+
+Example output – the three cases you will meet:
+
+```text
+[ OK ] Python 3.11.9
+[ OK ] IfcOpenShell 0.8.0
+[FAIL] config.py missing -> copy config_example.py to config.py and add your model path
+```
+
+```text
+[ OK ] Python 3.11.9
+[ OK ] IfcOpenShell 0.8.0
+[ OK ] config.py found
+[FAIL] No model at C:\Users\YourName\Models\your_model.ifc -> check the path in config.py
+```
+
+```text
+[ OK ] Python 3.11.9
+[ OK ] IfcOpenShell 0.8.0
+[ OK ] config.py found
+[ OK ] Model opened: IFC4X3, 834 products
+
+All good - you can run main.py
+```
+
+(Your Python / IfcOpenShell versions, schema and number of products depend on your installation and model.)
+
+**Try it:** run it once *before* creating `config.py`, once with a wrong path and once with the correct path –
+you should get two different `[FAIL]` messages and then `All good`.
 
 ---
 
@@ -151,7 +238,7 @@ Open the **Source Control** panel (`Ctrl+Shift+G`, the branch icon on the left).
  │ ▾ Staged Changes              │
  │     main.py            M      │  ← 2. files that go into the commit
  │ ▾ Changes                     │
- │     slab_info.py       M   +  │  ← 1. click + to stage a file
+ │     my_module.py       M   +  │  ← 1. click + to stage a file
  │     README.md          U   +  │
  └───────────────────────────────┘
    M = modified, U = untracked (new), D = deleted
@@ -182,9 +269,9 @@ VS Code marks the conflicting block:
 
 ```python
 <<<<<<< HEAD (Current Change)
-NAME_FILTER = "KLH"
+IFC_CLASS = "IfcWall"
 =======
-NAME_FILTER = "RC"
+IFC_CLASS = "IfcSlab"
 >>>>>>> origin/main (Incoming Change)
 ```
 
@@ -233,12 +320,28 @@ A pull request is also a good place for the peer feedback: comments are attached
 ## Files in this tutorial
 
 ```
-tutorial/
+A3/
 │   README.md               ← this tutorial
-└── template/               ← copy this into a new repository
-        .gitignore
+└── template/               ← copy these files into your group repository
+        .gitignore          ← keeps *.ifc and config.py off GitHub
         config_example.py   ← copy to config.py, add your model path
         check_setup.py      ← 1-minute check after cloning
-        requirements.txt
-        main.py             ← short entry point
+        requirements.txt    ← packages to install
+        main.py             ← minimal example: counts the elements of one IFC class
 ```
+
+`main.py` is the minimal example from the course tutorial, but with the model path from `config.py`:
+
+```python
+import ifcopenshell
+from config import MODEL_PATH      # your personal path (config.py is not on GitHub)
+
+IFC_CLASS = "IfcWall"              # which elements to count, e.g. "IfcSlab", "IfcBeam"
+
+model = ifcopenshell.open(MODEL_PATH)
+elements = model.by_type(IFC_CLASS)
+print(f"{IFC_CLASS} in model: {len(elements)}")
+```
+
+Use the line `IFC_CLASS = ...` to provoke your first merge conflict (Part 5): both partners change it to a
+different class, both commit, both sync.
