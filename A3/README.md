@@ -242,5 +242,4 @@ tutorial/
         check_setup.py      ← 1-minute check after cloning
         requirements.txt
         main.py             ← short entry point
-        slab_info.py        ← example module
 ```
