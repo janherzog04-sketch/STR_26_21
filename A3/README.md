@@ -59,23 +59,10 @@ VS Code uses Git in the background, it does not include it.
 
 Restart VS Code afterwards. If the Source Control panel (`Ctrl+Shift+G`) still says *"Download Git"*, Git is not found.
 
-### 1.2 Tell Git who you are
-
-Every commit is signed with a name and an e-mail. Use the e-mail of your GitHub account. In the VS Code terminal
-(`Ctrl+ö` on a German keyboard, ``Ctrl+` `` on an English one):
-
-```bash
-git config --global user.name "Your Name"
-git config --global user.email "you@example.com"
-```
-
-### 1.3 Sign in to GitHub
+### 1.2 Sign in to GitHub
 
 Click the **Accounts** icon (bottom left, the person symbol) → **Sign in with GitHub** → confirm in the browser.
 From now on, VS Code can clone, push and pull without asking for a password.
-
-> A GitHub **password does not work** for pushing from the command line anymore. The browser login (or a personal
-> access token) replaces it. If a password prompt appears, cancel it and sign in through VS Code.
 
 ---
 
@@ -126,8 +113,6 @@ __pycache__/
 output/
 ```
 
-The full version is in [`template/.gitignore`](template/.gitignore).
-
 **Check it in VS Code:** ignored files are shown **greyed out** in the Explorer and never appear in the Source
 Control panel. Copy an `.ifc` file into the folder – if it shows up under *Changes*, your `.gitignore` is wrong.
 
@@ -148,20 +133,8 @@ model = ifcopenshell.open(MODEL_PATH)
 ```
 
 After cloning, each person copies `config_example.py` → `config.py` once and writes their own path in it.
-Then run [`template/check_setup.py`](template/check_setup.py) – it tells you in plain words if Python,
+Then run the check_setup.py – it tells you in plain words if Python,
 IfcOpenShell, `config.py` or the model file is missing.
-
-### 3.3 Too late – the model is already committed?
-
-Remove it from Git, but keep it on your disk:
-
-```bash
-git rm --cached path/to/model.ifc
-git commit -m "Remove IFC model from repository"
-```
-
-> The file is still in the **old commits**. If it is bigger than 100 MB, GitHub keeps rejecting the push. Ask for
-> help before you experiment with the history.
 
 ---
 
@@ -198,16 +171,6 @@ commits are waiting to be pulled / pushed.
 
 Click a changed file in the panel to see a **side-by-side diff** of what you changed – check it before committing.
 
-### Good commit messages
-
-| Not helpful | Helpful |
-|---|---|
-| `update` | `Add span calculation from Qto_SlabBaseQuantities` |
-| `fix` | `Skip filler strips shorter than 1 m` |
-| `asdf` | `Move model path to config.py` |
-
-Rule of thumb: *"If applied, this commit will …"* + your message.
-
 ---
 
 ## Part 5 – Merge conflicts
@@ -238,19 +201,6 @@ Above the block you can click:
 For bigger conflicts click **Resolve in Merge Editor** (bottom right of the file) – a three-pane view with
 *Incoming*, *Current* and the *Result*.
 
-When every conflict in the file is solved:
-
-1. save the file,
-2. stage it (`+`),
-3. **Commit** (the message is filled in for you) → **Sync Changes**.
-
-> **Talk to each other.** The person who solves the conflict decides which code survives. If in doubt, call the
-> person who wrote the other version.
-
-**Jupyter notebooks** (`.ipynb`) are JSON files with outputs and images inside – conflicts in them are very hard
-to solve. Agree that only one person edits a notebook at a time, and clear the outputs before committing
-(`…` → *Clear All Outputs*).
-
 ---
 
 ## Part 6 – Branches and pull requests (optional, recommended)
@@ -258,7 +208,7 @@ to solve. Agree that only one person edits a notebook at a time, and clear the o
 Instead of everybody working on `main`, each person works on their own **branch** and merges it when it works.
 `main` always stays runnable – important for the submission.
 
-1. Click the branch name in the **status bar** (bottom left, `main`) → **Create new branch…** → e.g. `uls-checks`.
+1. Click the branch name in the **status bar** (bottom left, `main`) → **Create new branch…**.
 2. Work and commit as usual.
 3. Source Control panel → **Publish Branch**.
 4. On GitHub a yellow banner appears: **Compare & pull request** → describe the change → **Create pull request**.
@@ -281,41 +231,6 @@ A pull request is also a good place for the peer feedback: comments are attached
 
 ---
 
-## Exercises (peer test, in pairs)
-
-Please do these with a partner and tell us in your feedback where you got stuck.
-
-1. **Clone and set up.** Person A creates a repository from our [`template/`](template/) and adds person B as
-   collaborator. B clones it in VS Code, creates `config.py` and runs `python check_setup.py`.
-2. **Proof that Git ignores it.** Both copy an `.ifc` file into the folder. Does it appear in the Source Control panel?
-3. **First round trip.** A changes the print text in `main.py`, commits and syncs. B pulls and runs `main.py`.
-4. **Provoke a conflict.** Both change the same line, e.g. `NAME_FILTER` in `main.py` (one writes `"KLH"`, the other `"RC"`). Both
-   commit. A syncs first, then B syncs → solve the conflict in VS Code.
-5. **Branch.** B creates the branch `my-feature`, adds a function, publishes the branch and opens a pull request.
-   A merges it on GitHub. Both end on an up-to-date `main`.
-
-## Troubleshooting
-
-| Message / problem | Cause | Fix |
-|---|---|---|
-| Source Control says *"Download Git"* | Git not installed or not found | Install Git, restart VS Code |
-| *"Make sure you configure your user.name and user.email"* | Git doesn't know who you are | Part 1.2 |
-| *"Permission denied"* / 403 on push | Not invited as collaborator, or invitation not accepted | Owner: Settings → Collaborators; you: accept the e-mail invitation |
-| *"Updates were rejected because the remote contains work…"* | Partner pushed before you | **Sync Changes** (pull first), solve conflicts, push again |
-| *"File … exceeds GitHub's file size limit of 100 MB"* | IFC model was committed | Part 3.3 |
-| `.ifc` still shows up in Changes | It was committed before `.gitignore` existed | `git rm --cached <file>.ifc` |
-| `ModuleNotFoundError: No module named 'config'` after cloning | `config.py` is (correctly) not on GitHub | Copy `config_example.py` → `config.py` |
-| Files appear twice / weird changes in a OneDrive folder | Cloud sync and Git interfere | Clone into a folder outside OneDrive |
-
-## Checklist for your A4 repository
-
-- [ ] All group members are collaborators and have cloned the repository in VS Code
-- [ ] `.gitignore` with `*.ifc`, `config.py`, `.venv/`, `__pycache__/`, `output/`
-- [ ] No `.ifc` file and no `config.py` on GitHub (check on github.com, not only locally)
-- [ ] `config_example.py` and a README that says how to create `config.py`
-- [ ] `main` runs after a fresh clone (test it on a partner's laptop)
-- [ ] Commit history with readable messages
-
 ## Files in this tutorial
 
 ```
@@ -329,10 +244,3 @@ tutorial/
         main.py             ← short entry point
         slab_info.py        ← example module
 ```
-
-## Further reading
-
-- [VS Code – Source Control overview](https://code.visualstudio.com/docs/sourcecontrol/overview)
-- [VS Code – Working with GitHub](https://code.visualstudio.com/docs/sourcecontrol/github)
-- [GitHub – Inviting collaborators](https://docs.github.com/en/account-and-profile/setting-up-and-managing-your-personal-account-on-github/managing-access-to-your-personal-repositories/inviting-collaborators-to-a-personal-repository)
-- [Git – gitignore documentation](https://git-scm.com/docs/gitignore)
