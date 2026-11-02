@@ -46,7 +46,7 @@ You don't need the terminal for any of this – VS Code has everything built in.
 
 ---
 
-## Part 1 – Connect VS Code to GitHub (once per laptop)
+## Part 1 – Connect VS Code to GitHub
 
 ### 1.1 Install Git
 
