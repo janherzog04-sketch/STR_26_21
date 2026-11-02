@@ -202,7 +202,7 @@ For bigger conflicts click **Resolve in Merge Editor** (bottom right of the file
 
 ---
 
-## Part 6 – Branches and pull requests (optional, recommended)
+## Part 6 – Branches and pull requests
 
 Instead of everybody working on `main`, each person works on their own **branch** and merges it when it works.
 `main` always stays runnable – important for the submission.
