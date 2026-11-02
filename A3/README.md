@@ -143,13 +143,6 @@ After cloning, each person copies `config_example.py` → `config.py` once and w
 ifcopenshell
 ```
 
-Why it matters in a group:
-
-- Your partner sees at a glance what has to be installed – no guessing from `import` lines.
-- One command installs everything: `pip install -r requirements.txt` (in the VS Code terminal, inside the repository folder).
-- When you start using a new package (e.g. `pandas`), **add it to `requirements.txt` in the same commit**.
-  Otherwise your partner pulls your code and gets `ModuleNotFoundError`.
-
 ### 3.4 Check that everything works: `check_setup.py`
 
 After cloning, creating `config.py` and installing the packages, run:
