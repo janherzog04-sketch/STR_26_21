@@ -43,6 +43,7 @@ import ifcopenshell.util.unit as unit
 import pandas as pd
 
 from config import MODEL_PATH
+from checks_uls_f import run_and_print
 
 
 # ===================================================================================
@@ -181,3 +182,8 @@ if __name__ == "__main__":
     print(f"\n{len(slabs)} CLT slabs (filler strips < {MIN_SPAN_MM} mm ignored)")
     for (storey, slab_type), count in sorted(Counter((s["storey"], s["type"]) for s in slabs).items()):
         print(f"  {storey:<8} {slab_type:<12} {count:>3} slabs")
+        
+results = run_and_print(
+        slabs,
+        output_dir=Path(__file__).resolve().parent / "output"
+    )
