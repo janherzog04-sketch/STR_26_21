@@ -1,4 +1,5 @@
-# A4 – CLT Floor Check: does SLS govern the slab design? (Group 21, Structures)
+# A4 – CLT Floor Check: does SLS govern the slab design? 
+(Group 21, Structures)
 
 An IfcOpenShell tool that reads all cross-laminated timber (CLT) floor slabs of Building 308 from the IFC model,
 runs the ultimate limit state (ULS) and serviceability limit state (SLS) checks for every slab and shows which
