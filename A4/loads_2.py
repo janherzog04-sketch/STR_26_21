@@ -500,3 +500,132 @@ if __name__ == '__main__':
     print(source)
     print(f'{len(slabs)} slabs; {len(rows)} load-combination rows saved to {args.out}')
     print('Unassigned loads are candidate scenarios, not confirmed actual loads.')
+
+
+#==================================================================================
+# 9. SLS LOADS AND LOAD COMBINATIONS
+# ===================================================================================
+
+# Report Table 3.8 Category C. Factors: G, Q, snow, downward wind.
+SLS_COMBINATIONS = {
+    "LC11": ("characteristic", (1., 1., 0., 0.)),
+    "LC12": ("characteristic", (1., 1., .3, .3)),
+    "LC13": ("characteristic", (1., .6, 0., 1.)),
+    "LC14": ("characteristic", (1., .6, 1., .3)),
+    "LC21": ("frequent", (1., .6, 0., 0.)),
+    "LC22": ("frequent", (1., .6, 0., 0.)),
+    "LC23": ("frequent", (1., .5, 0., .2)),
+    "LC24": ("frequent", (1., .5, .2, 0.)),
+    "LC31": ("quasi_permanent", (1., .5, 0., 0.)),
+    "LC32": ("quasi_permanent", (1., .5, 0., 0.)),
+    "LC33": ("quasi_permanent", (1., .5, 0., 0.)),
+    "LC34": ("quasi_permanent", (1., .5, 0., 0.)),
+}
+ACTION_NAMES = ("G", "Q", "S", "W")
+ACTION_LABELS = {"G": "g", "Q": "q", "S": "snow", "W": "wind"}
+DEFLECTION_DIVISORS = {
+    "permanent_final": 400., "floor_imposed_instantaneous": 400.,
+    "roof_snow_instantaneous": 400., "roof_wind_instantaneous": 250.,
+}
+VIBRATION_CONFIG = {
+    "floor_width_m": 3.0,
+    "mass_fractions": (0., .10, .20), "damping_ratios": (.02, .03),
+    "walking_min_hz": 1.8, "walking_max_hz": 2.2, "walking_step_hz": .01,
+    "additional_impulse_paces_hz": (1.5,), "walker_weight_N": 746.,
+    "acceleration_reference_m_s2": .002*9.81,
+    "impulse_samples_per_step": 4097,
+}
+VIBRATION_SCOPE = (
+    "DIAGNOSTIC ONLY: unvalidated single-mode strip/impulse model and "
+    "raw-acceleration comparison, not a DS/EN/P354 utilisation or verdict. "
+    "Rigid simple supports, assumed 3 m responding width, no transverse "
+    "localisation, support-beam modes, rotary inertia, machinery, multiple "
+    "walkers or rhythmic activity. 1.5 Hz is impulse sensitivity only. "
+    "The maximum is only over the evaluated diagnostic scenarios."
+)
+
+def checked_number(value, label, positive=False):
+    value = float(value)
+    if not math.isfinite(value) or value < 0 or (positive and value == 0):
+        raise ValueError(f"Invalid {label}: {value}")
+    return value
+
+
+def export_csv(dataframe, filename, output_folder=None):
+    if dataframe.empty:
+        raise ValueError(f"No data to export: {filename}")
+    folder = Path(output_folder) if output_folder is not None else Path(__file__).resolve().parent / "output"
+    folder.mkdir(parents=True, exist_ok=True)
+    target = folder / filename
+    dataframe.to_csv(target, index=False, encoding="utf-8-sig", na_rep="")
+    print(f"Saved: {target}")
+    return target
+
+
+def slab_identity(slab):
+    return {k: slab[k] for k in (
+        "id", "guid", "type", "storey", "thickness_mm", "span_mm", "load_category"
+    )}
+
+
+def section_for_slab(slab):
+    if slab["type"] not in IFC_TYPE_TO_SECTION:
+        raise ValueError(f"Slab {slab['id']}: unmapped type {slab['type']!r}")
+    name = IFC_TYPE_TO_SECTION[slab["type"]]
+    props = SECTION_PROPERTIES[name]
+    thickness = checked_number(slab["thickness_mm"], "thickness", True)
+    if not math.isclose(thickness, props["thickness_mm"], rel_tol=0., abs_tol=.1):
+        raise ValueError(f"Slab {slab['id']}: thickness does not match {name}")
+    return name, props
+
+
+def assign_loads(raw_slabs):
+    loaded = []
+    for slab in raw_slabs:
+        if slab["storey"] not in STOREY_LOAD_CATEGORY:
+            raise ValueError(f"Unassigned storey {slab['storey']!r}")
+        category = STOREY_LOAD_CATEGORY[slab["storey"]]
+        if category not in ("floor", "roof"):
+            raise ValueError(f"Invalid load category {category!r}")
+        section_for_slab(slab)
+        t = checked_number(slab["thickness_mm"], "thickness", True)
+        self_weight = checked_number(CLT_UNIT_WEIGHT_KN_M3, "unit weight", True)*t/1000
+        additional = checked_number(ADDITIONAL_PERMANENT_LOAD_KN_M2, "additional permanent")
+        loaded.append({**slab, "load_category": category,
+            "g_clt_k_kn_m2": self_weight, "g_additional_k_kn_m2": additional,
+            "g_total_k_kn_m2": self_weight+additional,
+            "q_imposed_k_kn_m2": checked_number(FLOOR_IMPOSED_LOAD_KN_M2, "imposed") if category == "floor" else 0.,
+            "s_k_kn_m2": checked_number(ROOF_SNOW_LOAD_KN_M2, "snow") if category == "roof" else 0.,
+            "w_down_k_kn_m2": checked_number(ROOF_WIND_DOWN_KN_M2, "wind") if category == "roof" else 0.})
+    return loaded
+
+
+def get_actions(slab):
+    fields = ("g_total_k_kn_m2", "q_imposed_k_kn_m2", "s_k_kn_m2", "w_down_k_kn_m2")
+    return {a: checked_number(slab[k], f"action {a}") for a,k in zip(ACTION_NAMES, fields)}
+
+
+def export_loads(loaded_slabs, output_folder=None):
+    fields = list(slab_identity(loaded_slabs[0])) + [
+        "g_clt_k_kn_m2", "g_additional_k_kn_m2", "g_total_k_kn_m2",
+        "q_imposed_k_kn_m2", "s_k_kn_m2", "w_down_k_kn_m2"]
+    df = pd.DataFrame(loaded_slabs)[fields]
+    if df.isna().any().any():
+        raise ValueError("Missing characteristic-load data")
+    export_csv(df, "slab_characteristic_loads.csv", output_folder)
+    return df
+
+
+def calculate_sls_combinations(loaded_slabs, output_folder=None):
+    rows = []
+    for slab in loaded_slabs:
+        actions = get_actions(slab)
+        for case, (family, factors) in SLS_COMBINATIONS.items():
+            parts = {a: actions[a]*f for a,f in zip(ACTION_NAMES, factors)}
+            rows.append({**slab_identity(slab), "case": case, "family": family,
+                **{f"factor_{a}": f for a,f in zip(ACTION_NAMES, factors)},
+                **{f"{a}_contribution_kn_m2": x for a,x in parts.items()},
+                "total_sls_kn_m2": sum(parts.values()), "basis": "Report Table 3.8 Category C"})
+    df = pd.DataFrame(rows)
+    export_csv(df, "slab_sls_combinations.csv", output_folder)
+    return df
