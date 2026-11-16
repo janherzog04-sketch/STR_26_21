@@ -118,7 +118,6 @@ Stage A (client needs and strategies) has no detailed model yet, so the tool is 
 | **Structures** | Main user: verification of the CLT slabs, choice of slab build-up and span |
 | **Architecture** | Floor build-up height and span/beam layout depend on the governing check |
 | **Materials / LCA** | A thinner panel means less timber volume and lower embodied CO₂ |
-| **MEP** | Slab thickness and beam spacing affect the available service zone |
 | **PM / ICT** | Fast, repeatable check of a report claim; status of all slabs in one table |
 
 ### What information is required in the model?
