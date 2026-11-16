@@ -326,120 +326,209 @@ def run_all_slabs(slabs, *, assignments=None, output_dir=None):
 
 
 def print_toolbox_comparison(batch, output_dir=None):
-    """Append ULS-only comparison. References are separate from IFC results.
+    """Show only the two Toolbox reference cases."""
+    references = {
+        "P301": {
+            "bending": 29.18,
+            "longitudinal_shear": 9.57,
+            "rolling_shear": 21.00
+        },
+        "P401": {
+            "bending": 11.47,
+            "longitudinal_shear": 3.20,
+            "rolling_shear": 6.70
+        }
+    }
 
-    A per-element comparison requires an explicitly assigned role/category and
-    matching strip width, thickness, span (0.5 mm tolerance), characteristic
-    actions, material edition and resistance factors. Never compare floor_E
-    or maintenance envelope percentages with the P301/P401 reference as if
-    the loads were equal. Missing assignments do not establish equivalence.
-    """
-    references={'P301':{'bending':29.18,'longitudinal_shear':9.57,'rolling_shear':21.00},
-                'P401':{'bending':11.47,'longitudinal_shear':3.20,'rolling_shear':6.70}}
-    print('\nTOOLBOX - ULS REFERENCE CASES (independent reference tests, not all IFC slabs)')
-    print(f"{'Case':<6} {'Check':<22} {'Our %':>9} {'Toolbox %':>10} {'Delta pp':>10}")
-    for name,reference in references.items():
-        _,calculated=reference_slab(name)
-        for check,value in reference.items():
-            our=100*calculated['maximum_utilization'][check]
-            print(f'{name:<6} {check:<22} {our:>9.2f} {value:>10.2f} {our-value:>10.2f}')
-    print('Our inputs: CLT unit weight 5.5 kN/m3, ETA2017; L=3.20m, width=1m.')
-    print('Toolbox 75/83% are SLS maxima and are not ULS comparison targets.')
+    print("\nULS COMPARISON WITH TOOLBOX")
+    print("Reference cases: span = 3.20 m, strip width = 1.00 m.\n")
 
-    matches=[]
-    for item in batch['details']:
-        slab=item['slab'];a=item['assignment'];props=item['properties'];sec=props['section']
-        if not a.get('role'):
-            continue
-        common=(abs(sec['span_mm']-3200)<=.5 and abs(sec['width_mm']-1000)<1e-6
-                and props['material'].get('E0_mean_MPa')==12000
-                and props['material'].get('E90_mean_MPa')==370
-                and props['material'].get('G90_mean_MPa')==50
-                and props['material'].get('fm_k_MPa')==24
-                and props['material'].get('fv_k_MPa')==2.7
-                and props['rolling_shear_k_MPa']==1.2)
-        if not common:
-            continue
-        for case in item['scenarios']:
-            load=case['loads'];result=case['checks'];actions=load['actions_kN_m2']
-            if result['gamma_M']!=1.19 or result['ksys']!=1.0:
-                continue
-            name=None
-            if (a.get('role')=='floor' and a.get('category')=='C3'
-                    and abs(slab['thickness_mm']-140)<.1
-                    and abs(actions.get('G',0)-1.97)<1e-6
-                    and abs(actions.get('Q',0)-5)<1e-6
-                    and not actions.get('W',0) and not actions.get('S',0)
-                    and result['maximum_utilization']
-                    and all(abs(c['kmod']-.8)<1e-6 for c in result['results'] if 'Qk' in c['expression'])):
-                name='P301'
-            elif (a.get('role')=='roof' and abs(slab['thickness_mm']-130)<.1
-                    and abs(actions.get('G',0)-1.915)<1e-6
-                    and abs(actions.get('S',0)-.8)<1e-6
-                    and abs(actions.get('W',0)-.3)<1e-6 and not actions.get('Q',0)):
-                name='P401'
-            if name is None:
-                continue
-            row={'id':slab['id'],'guid':slab['guid'],'reference':name,
-                 'scenario':load['scenario'],'span_mm':sec['span_mm'],
-                 'comparison_status':'CONDITIONAL_COMPARABLE_STRIP'}
-            for check,value in references[name].items():
-                row[check+'_pct']=100*result['maximum_utilization'][check]
-                row[check+'_toolbox_pct']=value
-                row[check+'_delta_pp']=row[check+'_pct']-value
-            matches.append(row)
-    print('\nIFC STRIPS COMPARABLE TO TOOLBOX (project self-weight; span tolerance 0.5mm)')
-    if matches:
-        print(f"{'ID':>6} {'Ref':<5} {'Bend%':>8} {'TB%':>7} {'dpp':>7} {'Long%':>8} {'TB%':>7} {'dpp':>7} {'Roll%':>8} {'TB%':>7} {'dpp':>7}")
-        for row in matches:
-            values=''.join(f" {row[k+'_pct']:>8.2f} {row[k+'_toolbox_pct']:>7.2f} {row[k+'_delta_pp']:>7.2f}" for k in ('bending','longitudinal_shear','rolling_shear'))
-            print(f"{row['id']:>6} {row['reference']:<5}"+values)
-    else:
-        print('No individually assigned slab satisfies the comparison criteria.')
-    print(f'{len(matches)} comparable-strip comparisons. Unverified supports/grain assumptions still apply.')
-    print('Storage E, roof maintenance, different spans and different wind inputs are not direct comparisons.')
-    print('Current batch roof pressures 0.29/0.25kPa differ from Toolbox P401 0.30kPa; P401 above is a reference test only.')
+    header = (
+        f"{'Case':<6} | "
+        f"{'Bend%':>8} {'Toolbox%':>9} | "
+        f"{'Long%':>8} {'Toolbox%':>9} | "
+        f"{'Roll%':>8} {'Toolbox%':>9}"
+    )
+
+    print(header)
+    print("-" * len(header))
+
+    rows = []
+
+    for name, toolbox in references.items():
+        _, result = reference_slab(name)
+        calculated = result["maximum_utilization"]
+
+        row = {"case": name}
+
+        for check in toolbox:
+            row[check + "_pct"] = calculated[check] * 100
+            row[check + "_toolbox_pct"] = toolbox[check]
+
+        rows.append(row)
+
+        print(
+            f"{name:<6} | "
+            f"{row['bending_pct']:>8.2f} "
+            f"{toolbox['bending']:>9.2f} | "
+            f"{row['longitudinal_shear_pct']:>8.2f} "
+            f"{toolbox['longitudinal_shear']:>9.2f} | "
+            f"{row['rolling_shear_pct']:>8.2f} "
+            f"{toolbox['rolling_shear']:>9.2f}"
+        )
+
     if output_dir is not None:
-        keys=['id','guid','reference','scenario','span_mm','comparison_status']
-        keys += [k+suffix for k in ('bending','longitudinal_shear','rolling_shear')
-                 for suffix in ('_pct','_toolbox_pct','_delta_pp')]
-        with (Path(output_dir)/'toolbox_comparison.csv').open('w',newline='',encoding='utf-8-sig') as f:
-            writer=csv.DictWriter(f,fieldnames=keys);writer.writeheader();writer.writerows(matches)
-    return matches
+        folder = Path(output_dir)
+        folder.mkdir(parents=True, exist_ok=True)
+
+        with (folder / "toolbox_comparison.csv").open(
+            "w", newline="", encoding="utf-8-sig"
+        ) as file:
+            writer = csv.DictWriter(file, fieldnames=list(rows[0]))
+            writer.writeheader()
+            writer.writerows(rows)
+
+    return rows
+
+def run_and_print(
+    slabs,
+    *,
+    output_dir="output",
+    assignments=None,
+    source=None,
+    compare_toolbox=True
+):
+    """
+    Called from main.py after extracting the slabs.
+
+    Assign loads, calculate ULS checks, save the results,
+    and print the summary and Toolbox comparison.
+    """
+    # Read the assignments embedded in loads.py.
+    if assignments is None:
+        resolved = read_assignments(None, slabs)
+    else:
+        resolved = assignments
+
+    # Calculate all slab checks.
+    result = run_all_slabs(
+        slabs,
+        assignments=resolved,
+        output_dir=output_dir
+    )
+
+    # Save the load combinations.
+    export_loads(slabs, resolved, output_dir)
+
+    if source:
+        print(source)
+
+    if assignments is None:
+        print("Load assignment: built into loads.py.")
+
+    if not resolved:
+        print(
+            "WARNING: no slab assignments loaded. "
+            "Results are generic candidate envelopes."
+        )
+
+    # Print the ULS summary.
+    print("\nCONDITIONAL ULS STRIP RESULTS")
+    print("Loads, supports and grain orientation require verification.\n")
+
+    header = (
+        f"{'ID':>6} "
+        f"{'Storey':<8} "
+        f"{'Zone':>4} "
+        f"{'L [m]':>6} "
+        f"{'Scenario':<20} "
+        f"{'Bend%':>8} "
+        f"{'Long%':>8} "
+        f"{'Roll%':>8} "
+        f"{'Uplift N':>9}"
+    )
+
+    print(header)
+    print("-" * len(header))
+
+    for row in result["summary"]:
+        if row["status"] == "ERROR":
+            print(f"{row['id']:>6} ERROR: {row['error']}")
+            continue
+
+        zone = row.get("structural_zone") or "?"
+
+        print(
+            f"{row['id']:>6} "
+            f"{row['storey']:<8} "
+            f"{str(zone):>4} "
+            f"{row['span_mm'] / 1000:>6.3f} "
+            f"{row['scenario']:<20} "
+            f"{row['bending_pct']:>8.2f} "
+            f"{row['longitudinal_shear_pct']:>8.2f} "
+            f"{row['rolling_shear_pct']:>8.2f} "
+            f"{row['uplift_per_support_N']:>9.1f}"
+        )
+
+    print(
+        f"\n{len(slabs)} slabs; "
+        f"{len(result['scenarios'])} scenarios; "
+        f"{len(result['combinations'])} ULS combinations; "
+        f"{len(result['errors'])} errors."
+    )
+
+    print(f"Results saved in: {Path(output_dir).resolve()}")
+    print(
+        "Bearing without support dimensions, anchorage, "
+        "SLS and vibration are not verified."
+    )
+
+    # Print the comparison below the slab results.
+    if compare_toolbox:
+        print_toolbox_comparison(result, output_dir)
+
+    return result
 
 
 def main():
+    """Run checks_uls.py directly from the terminal."""
     import argparse
-    parser=argparse.ArgumentParser(description='CLT ULS results for all IFC slabs; conditional screening and Toolbox validation.')
+
+    parser = argparse.ArgumentParser(
+        description="ULS checks for all CLT slabs."
+    )
+
     add_input_arguments(parser)
-    parser.add_argument('--toolbox',action='store_true',help='Run only the original two Toolbox cases.')
-    args=parser.parse_args()
+
+    parser.add_argument(
+        "--toolbox",
+        action="store_true",
+        help="Run only the two Toolbox reference cases."
+    )
+
+    args = parser.parse_args()
+
     if args.toolbox:
-        run_toolbox_validation();return 0
-    slabs,source=obtain_slabs(ifc_path=args.ifc,main_path=args.main,input_path=args.input)
-    assignments=read_assignments(args.assignments,slabs)
-    result=run_all_slabs(slabs,assignments=assignments,output_dir=args.out)
-    export_loads(slabs,assignments,args.out)
-    print(source)
-    if args.assignments is None:
-        print('Load assignment: built into loads.py (no external JSON input).')
-    if not assignments:
-        print('WARNING: no per-GUID assignment loaded. Zone ? and floor_E envelopes are generic candidates.')
-        print('Load assignments are built into loads.py; remove an empty explicit --assignments override.')
-    print('CONDITIONAL ULS STRIP RESULTS - loads and supports not automatically certified')
-    print(f"{'ID':>6} {'Storey':<8} {'Zone':>4} {'L [m]':>6} {'Scenario':<20} {'Bend%':>8} {'Long%':>8} {'Roll%':>8} {'Uplift N':>9}")
-    for r in result['summary']:
-        if r['status']=='ERROR':
-            print(f"{r['id']:>6} ERROR: {r['error']}");continue
-        print(f"{r['id']:>6} {r['storey']:<8} {str(r.get('structural_zone') or '?'):>4} {r['span_mm']/1000:>6.3f} {r['scenario']:<20} "
-              f"{r['bending_pct']:>8.2f} {r['longitudinal_shear_pct']:>8.2f} {r['rolling_shear_pct']:>8.2f} {r['uplift_per_support_N']:>9.1f}")
-    print(f"\n{len(slabs)} slabs; {len(result['scenarios'])} scenarios; {len(result['combinations'])} ULS combinations; {len(result['errors'])} errors.")
-    print('Table contains candidate envelopes; see CSV/JSON for every scenario and combination.')
-    print(f"Outputs: {Path(args.out).resolve()}")
-    print('Bearing without support dimensions, anchorage, SLS and vibration are NOT verified.')
-    print_toolbox_comparison(result,args.out)
-    return 1 if result['errors'] else 0
+        run_toolbox_validation()
+        return 0
+
+    slabs, source = obtain_slabs(
+        ifc_path=args.ifc,
+        main_path=args.main,
+        input_path=args.input
+    )
+
+    assignments = read_assignments(args.assignments, slabs)
+
+    result = run_and_print(
+        slabs,
+        assignments=assignments,
+        output_dir=args.out,
+        source=source
+    )
+
+    return 1 if result["errors"] else 0
 
 
-if __name__=='__main__':
+if __name__ == "__main__":
     raise SystemExit(main())
