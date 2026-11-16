@@ -1,4 +1,4 @@
-# A4 – CLT Floor Check: does SLS govern the slab design? 
+# A4 – CLT Floor Check: Does SLS govern the slab design? 
 Group: STR_26_21
 
 An IfcOpenShell tool that reads all cross-laminated timber (CLT) floor slabs of Building 308 from the IFC model,
