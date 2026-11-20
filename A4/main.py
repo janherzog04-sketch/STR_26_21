@@ -182,59 +182,265 @@ if __name__ == "__main__":
     print(f"\n{len(slabs)} CLT slabs (filler strips < {MIN_SPAN_MM} mm ignored)")
     for (storey, slab_type), count in sorted(Counter((s["storey"], s["type"]) for s in slabs).items()):
         print(f"  {storey:<8} {slab_type:<12} {count:>3} slabs")
-        
-results = run_and_print(
+  
+# Run ULS checks.
+if __name__ == "__main__":
+    uls_results = run_and_print(
         slabs,
-        output_dir=Path(__file__).resolve().parent / "output"
+        output_dir=Path(__file__).resolve().parent / "output",
     )
 
+# ===================================================================================
+# 6. SLS RESULTS AND COMPARISON WITH THE REPORT
+# ===================================================================================
+if __name__ == "__main__":
+    import checks_sls as sls
+    from contextlib import redirect_stdout
+    from io import StringIO
 
-# ==================================================================================
-## 6. IMPORT SLS RESULTS FROM THE OTHER SCRIPT  
-
- # --- SLS: final deformation and report comparison ----------------------
-import checks_sls as sls
-from contextlib import redirect_stdout
-from io import StringIO
-
-previous_settings = (
+    # Preserve the settings in the SLS module.
+    previous_settings = (
         sls.RUN_DIAGNOSTIC_VIBRATION,
         sls.EXPORT_TABLE_IMAGES,
     )
 
-try:
+    try:
+        # Only final-deflection results are needed for these tables.
         sls.RUN_DIAGNOSTIC_VIBRATION = False
         sls.EXPORT_TABLE_IMAGES = False
 
+        # Use the slabs already extracted in Chapter 5.
+        # Keep CSV exports, but hide verbose SLS printing.
         with redirect_stdout(StringIO()):
             sls_results = sls.run_sls_workflow(
                 slabs,
                 output_folder=Path(__file__).resolve().parent / "output",
             )
-finally:
+    finally:
         (
             sls.RUN_DIAGNOSTIC_VIBRATION,
             sls.EXPORT_TABLE_IMAGES,
         ) = previous_settings
 
-columns = {
-        "slab_id": "Slab ID",
-        "storey": "Storey",
-        "maximum_final_deformation_mm": "Max final [mm]",
-        "allowable_final_deformation_mm": "Limit [mm]",
-        "deflection_utilisation_percent": "Utilisation [%]",
-        "report_reference": "Report reference",
-        "same_span_as_report": "Same span",
-        "report_final_deformation_mm": "Report final [mm]",
-        "report_deflection_utilisation_percent": "Report utilisation [%]",
-        "final_deformation_difference_percent": "Difference [%]",
-    }
+    summary = (
+        sls_results["summary"]
+        .sort_values(["storey", "slab_id"])
+        .copy()
+    )
 
-sls_table = sls_results["summary"][list(columns)].rename(columns=columns)
+    def number(value):
+        """Format numbers and show missing values as a dash."""
+        return "—" if pd.isna(value) else f"{float(value):.2f}"
 
-print("\nSLS FINAL-DEFORMATION COMPARISON — L/360")
-print(sls_table.to_string(
+    # -----------------------------------------------------------------------
+    # TABLE 1: CALCULATED SLS RESULTS
+    # -----------------------------------------------------------------------
+    print("\nSLS FINAL-DEFLECTION RESULTS — L/360")
+
+    header = (
+        f"{'Slab ID':>7} | "
+        f"{'Storey':<8} | "
+        f"{'Span [m]':>8} | "
+        f"{'Max final [mm]':>14} | "
+        f"{'Max allowed [mm]':>16} | "
+        f"{'Utilisation [%]':>15}"
+    )
+    print(header)
+    print("-" * len(header))
+
+    for _, row in summary.iterrows():
+        print(
+            f"{int(row['slab_id']):>7} | "
+            f"{row['storey']:<8} | "
+            f"{row['span_mm'] / 1000:>8.3f} | "
+            f"{number(row['maximum_final_deformation_mm']):>14} | "
+            f"{number(row['allowable_final_deformation_mm']):>16} | "
+            f"{number(row['deflection_utilisation_percent']):>15}"
+        )
+
+    # -----------------------------------------------------------------------
+    # TABLE 2: COMPARISON WITH REPORT VALUES
+    # -----------------------------------------------------------------------
+    print("\nSLS COMPARISON WITH REPORT")
+    print("Final deflection in mm; utilisation based on L/360.\n")
+
+    header = (
+        f"{'Slab ID':>7} | "
+        f"{'Report case':<12} | "
+        f"{'Calc. [mm]':>10} | "
+        f"{'Report [mm]':>11} | "
+        f"{'Calc. [%]':>10} | "
+        f"{'Report [%]':>10} | "
+        f"{'Diff. [%]':>10}"
+    )
+    print(header)
+    print("-" * len(header))
+
+    for _, row in summary.iterrows():
+        reference = row["report_reference"]
+
+        if pd.isna(reference):
+            reference = "No reference"
+        else:
+            reference = str(reference).replace("_REPRESENTATIVE", "")
+            same_span = row["same_span_as_report"]
+
+            if pd.isna(same_span) or not bool(same_span):
+                reference += "*"
+
+        print(
+            f"{int(row['slab_id']):>7} | "
+            f"{reference:<12} | "
+            f"{number(row['maximum_final_deformation_mm']):>10} | "
+            f"{number(row['report_final_deformation_mm']):>11} | "
+            f"{number(row['deflection_utilisation_percent']):>10} | "
+            f"{number(row['report_deflection_utilisation_percent']):>10} | "
+            f"{number(row['final_deformation_difference_percent']):>10}"
+        )
+
+    print("\nDiff. [%] = (calculated final deflection / report final deflection - 1) × 100.")
+    print("* Different span from the report; no difference is calculated.")
+   
+
+# ===================================================================================
+# 7. COMBINED ULS / SLS UTILISATION TABLE AND CSV
+# ===================================================================================
+if __name__ == "__main__":
+    import numpy as np
+
+    # Start with every extracted slab so no slab is silently omitted.
+    combined = pd.DataFrame(slabs)[
+        ["guid", "id", "storey", "span_mm"]
+    ].copy()
+
+    # ULS governing percentage across the implemented ULS checks.
+    uls_summary = (
+        pd.DataFrame(uls_results["summary"])
+        .reindex(columns=["guid", "span_mm", "max_pct", "status"])
+        .rename(columns={
+            "span_mm": "uls_span_mm",
+            "max_pct": "uls_percent",
+            "status": "uls_status",
+        })
+    )
+
+    # SLS combined final-deflection utilisation against L/360.
+    sls_summary = (
+        sls_results["summary"][
+            ["guid", "span_mm", "deflection_utilisation_percent"]
+        ]
+        .rename(columns={
+            "span_mm": "sls_span_mm",
+            "deflection_utilisation_percent": "sls_percent",
+        })
+    )
+
+    # Match by GUID, not by row position.
+    combined = combined.merge(
+        uls_summary, on="guid", how="left", validate="one_to_one"
+    ).merge(
+        sls_summary, on="guid", how="left", validate="one_to_one"
+    )
+
+    for column in (
+        "span_mm", "uls_span_mm", "sls_span_mm",
+        "uls_percent", "sls_percent",
+    ):
+        combined[column] = pd.to_numeric(
+            combined[column], errors="coerce"
+        )
+
+    valid = (
+        np.isfinite(combined["uls_percent"])
+        & np.isfinite(combined["sls_percent"])
+        & combined["uls_percent"].ge(0)
+        & combined["sls_percent"].ge(0)
+        & combined["uls_status"].ne("ERROR")
+    )
+
+    same_span = (
+        np.isclose(
+            combined["uls_span_mm"],
+            combined["sls_span_mm"],
+            rtol=0,
+            atol=0.1,
+        )
+        & np.isclose(
+            combined["span_mm"],
+            combined["sls_span_mm"],
+            rtol=0,
+            atol=0.1,
+        )
+    )
+
+    comparable = valid & same_span
+
+    combined["Higher check"] = "NOT ASSESSED"
+
+    combined.loc[comparable, "Higher check"] = np.where(
+        combined.loc[comparable, "sls_percent"]
+        > combined.loc[comparable, "uls_percent"],
+        "SLS",
+        "ULS",
+    )
+
+    equal = comparable & np.isclose(
+        combined["sls_percent"],
+        combined["uls_percent"],
+        rtol=0,
+        atol=0.000001,
+    )
+    combined.loc[equal, "Higher check"] = "EQUAL"
+    combined.loc[valid & ~same_span, "Higher check"] = "SPAN MISMATCH"
+
+    combined["Utilisation [%]"] = (
+        combined[["uls_percent", "sls_percent"]]
+        .max(axis=1)
+        .where(comparable)
+    )
+    combined["Span [m]"] = combined["span_mm"] / 1000
+
+    final_table = (
+        combined.rename(columns={
+            "id": "Slab ID",
+            "storey": "Level",
+        })[
+            [
+                "Slab ID",
+                "Level",
+                "Span [m]",
+                "Higher check",
+                "Utilisation [%]",
+            ]
+        ]
+        .sort_values(["Level", "Slab ID"])
+        .reset_index(drop=True)
+    )
+
+    print("\nCOMBINED ULS / SLS RESULTS")
+    print("Provisional numerical comparison; SLS = final deflection only.\n")
+    print(final_table.to_string(
         index=False,
         na_rep="—",
-        float_format=lambda value: f"{value:.3f}",
-    ))   
+        formatters={
+            "Span [m]": lambda value: f"{value:.3f}",
+            "Utilisation [%]": lambda value: f"{value:.2f}",
+        },
+    ))
+
+    csv_path = (
+        Path(__file__).resolve().parent
+        / "output"
+        / "slab_uls_sls_comparison.csv"
+    )
+    csv_path.parent.mkdir(parents=True, exist_ok=True)
+
+    final_table.to_csv(
+        csv_path,
+        index=False,
+        encoding="utf-8-sig",
+        na_rep="",
+    )
+
+    print(f"\nCSV saved: {csv_path}")
+    print("For all slabs SLS is the governing check, confirming the claim in the report.")

@@ -626,7 +626,7 @@ def get_actions(slab):
     return {a: checked_number(slab[k], f"action {a}") for a,k in zip(ACTION_NAMES, fields)}
 
 
-def export_loads(loaded_slabs, output_folder=None):
+def export_sls_loads(loaded_slabs, output_folder=None):
     fields = list(slab_identity(loaded_slabs[0])) + [
         "g_clt_k_kn_m2", "g_additional_k_kn_m2", "g_total_k_kn_m2",
         "q_imposed_k_kn_m2", "s_k_kn_m2", "w_down_k_kn_m2"]
