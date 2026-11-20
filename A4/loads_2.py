@@ -514,9 +514,7 @@ FLOOR_IMPOSED_LOAD_KN_M2 = 5.0
 ROOF_SNOW_LOAD_KN_M2 = 0.8
 ROOF_WIND_DOWN_KN_M2 = 0.29
 STOREY_LOAD_CATEGORY = {"Level 1": "floor", "Level 2": "floor", "Roof 2": "roof"}
-K_DEF = 0.8
-PSI2 = {"Q": 0.5, "S": 0.0, "W": 0.0}
-CAMBER_MM = 0.0
+
 SECTION_PROPERTIES = {
     "KLH5/130TL": {"thickness_mm": 130., "EI_Nmm2": 1.880e12,
                    "Ks_N": 12.400e6, "EI_y_Nmm2": 0.316e12},
