@@ -187,3 +187,54 @@ results = run_and_print(
         slabs,
         output_dir=Path(__file__).resolve().parent / "output"
     )
+
+
+# ==================================================================================
+## 6. IMPORT SLS RESULTS FROM THE OTHER SCRIPT  
+
+ # --- SLS: final deformation and report comparison ----------------------
+import checks_sls as sls
+from contextlib import redirect_stdout
+from io import StringIO
+
+previous_settings = (
+        sls.RUN_DIAGNOSTIC_VIBRATION,
+        sls.EXPORT_TABLE_IMAGES,
+    )
+
+try:
+        sls.RUN_DIAGNOSTIC_VIBRATION = False
+        sls.EXPORT_TABLE_IMAGES = False
+
+        with redirect_stdout(StringIO()):
+            sls_results = sls.run_sls_workflow(
+                slabs,
+                output_folder=Path(__file__).resolve().parent / "output",
+            )
+finally:
+        (
+            sls.RUN_DIAGNOSTIC_VIBRATION,
+            sls.EXPORT_TABLE_IMAGES,
+        ) = previous_settings
+
+columns = {
+        "slab_id": "Slab ID",
+        "storey": "Storey",
+        "maximum_final_deformation_mm": "Max final [mm]",
+        "allowable_final_deformation_mm": "Limit [mm]",
+        "deflection_utilisation_percent": "Utilisation [%]",
+        "report_reference": "Report reference",
+        "same_span_as_report": "Same span",
+        "report_final_deformation_mm": "Report final [mm]",
+        "report_deflection_utilisation_percent": "Report utilisation [%]",
+        "final_deformation_difference_percent": "Difference [%]",
+    }
+
+sls_table = sls_results["summary"][list(columns)].rename(columns=columns)
+
+print("\nSLS FINAL-DEFORMATION COMPARISON — L/360")
+print(sls_table.to_string(
+        index=False,
+        na_rep="—",
+        float_format=lambda value: f"{value:.3f}",
+    ))   
