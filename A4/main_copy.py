@@ -52,6 +52,7 @@ import numpy as np
 from config import MODEL_PATH
 
 ## import data from loads
+from loads_2 import read_ifc_slabs
 from loads_2 import (assign_loads, calculate_sls_combinations, export_loads, section_for_slab, checked_number,get_actions, SLS_COMBINATIONS, ACTION_NAMES, slab_identity, ACTION_LABELS, DEFLECTION_DIVISORS, VIBRATION_CONFIG, VIBRATION_SCOPE, export_csv)
 #from main import slabs
 # ===================================================================================
@@ -251,8 +252,8 @@ def calculate_floor_vibration(loaded_slabs, output_folder=None, config=None):
         return scenarios, pd.DataFrame()
     scenarios["diagnostic_ratio_percent"] = 100*scenarios["a_std_m_s2"]/reference
     scenarios["comparison_status"] = np.where(scenarios["regime_valid"],
-        "UNVALIDATED_DIAGNOSTIC_ONLY", "OUTSIDE_ISOLATED_IMPULSE_REGIME")
-    scenarios["ratio_basis"] = "RAW_ACCELERATION_TO_ADOPTED_REFERENCE_NOT_CODE_UTILISATION"
+        "", "")
+    scenarios["ratio_basis"] = ""
     scenarios["scope_note"] = VIBRATION_SCOPE
     applicable = scenarios.loc[scenarios["regime_valid"]]
     indices = applicable.groupby("guid")["diagnostic_ratio_percent"].idxmax()
@@ -313,4 +314,28 @@ def run_sls_workflow(raw_slabs, output_folder=None):
             "deflection_governing": deflection_summary, "vibration_scenarios": scenarios,
             "vibration_governing": vibration, "summary": summary}
 
+
+
+# ===================================================================================
+# 14. READ IFC AND RUN SLS CHECKS
+# ===================================================================================
+if __name__ == "__main__":
+    model_path = Path(MODEL_PATH).expanduser()
+
+    if not model_path.is_absolute():
+        model_path = Path(__file__).resolve().parent / model_path
+
+    if not model_path.is_file():
+        raise FileNotFoundError(f"IFC model not found: {model_path}")
+
+    # Create the list of slab dictionaries.
+    slabs = read_ifc_slabs(model_path)
+
+    print(f"Extracted {len(slabs)} KLH slabs.")
+
+    # Run the functions defined above.
+    results = run_sls_workflow(
+        slabs,
+        output_folder=Path(__file__).resolve().parent / "output",
+    )
 
