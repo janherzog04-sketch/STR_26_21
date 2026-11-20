@@ -505,6 +505,28 @@ if __name__ == '__main__':
 #==================================================================================
 # 9. SLS LOADS AND LOAD COMBINATIONS
 # ===================================================================================
+import pandas as pd
+import numpy as np
+
+CLT_UNIT_WEIGHT_KN_M3 = 5.5
+ADDITIONAL_PERMANENT_LOAD_KN_M2 = 1.2
+FLOOR_IMPOSED_LOAD_KN_M2 = 5.0
+ROOF_SNOW_LOAD_KN_M2 = 0.8
+ROOF_WIND_DOWN_KN_M2 = 0.29
+STOREY_LOAD_CATEGORY = {"Level 1": "floor", "Level 2": "floor", "Roof 2": "roof"}
+K_DEF = 0.8
+PSI2 = {"Q": 0.5, "S": 0.0, "W": 0.0}
+CAMBER_MM = 0.0
+SECTION_PROPERTIES = {
+    "KLH5/130TL": {"thickness_mm": 130., "EI_Nmm2": 1.880e12,
+                   "Ks_N": 12.400e6, "EI_y_Nmm2": 0.316e12},
+    "KLH5/140TL": {"thickness_mm": 140., "EI_Nmm2": 2.540e12,
+                   "Ks_N": 12.700e6, "EI_y_Nmm2": 0.208e12},
+}
+IFC_TYPE_TO_SECTION = {
+    "KLH5/130TL": "KLH5/130TL", "KLH5/130TL 2": "KLH5/130TL",
+    "KLH5/140TL": "KLH5/140TL",
+}
 
 # Report Table 3.8 Category C. Factors: G, Q, snow, downward wind.
 SLS_COMBINATIONS = {
@@ -566,6 +588,7 @@ def slab_identity(slab):
     return {k: slab[k] for k in (
         "id", "guid", "type", "storey", "thickness_mm", "span_mm", "load_category"
     )}
+
 
 
 def section_for_slab(slab):
